@@ -1,4 +1,4 @@
-function makeFakeRecipe(customizedRecipe) {
+function makeFakeRecipe(customizedRecipe = {}) {
   const recipe = {
     name: "Xiao Long Bao",
     notes: "Making Xiao Long Bao is actually very simple. You just need to follow the steps below.",
