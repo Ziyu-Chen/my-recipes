@@ -39,7 +39,7 @@ const constraints = {
   }
 };
 
-function builtMakeRecipe({ Id, sanitize, validate, makeIngredient, RecipeException, generateError }) {
+function builtMakeRecipe({ Id, sanitize, validate, makeIngredient, generateError }) {
   return function makeRecipe({
     id = Id.makeId(),
     name,

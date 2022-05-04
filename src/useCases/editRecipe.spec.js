@@ -1,6 +1,7 @@
 const { makeDb, closeDb, clearDb } = require("../../__test__/db");
 const makeRecipesDb = require("../dataAccess/recipesDb");
 const buildAddRecipe = require("./addRecipe");
+const buildEditRecipe = require("./editRecipe");
 const makeFakeRecipe = require("../../__test__/makeFakeRecipe");
 const Id = require("../Id");
 
@@ -18,13 +19,15 @@ function verifyEquality(recipe, benchmarkRecipe) {
   }
 }
 
-describe("Add Recipe", () => {
+describe("Edit Recipe", () => {
   let recipesDb;
   let addRecipe;
+  let editRecipe;
 
   beforeAll(() => {
     recipesDb = makeRecipesDb({ makeDb });
     addRecipe = buildAddRecipe({ recipesDb });
+    editRecipe = buildEditRecipe({ recipesDb });
   });
 
   afterAll(async () => {
@@ -32,27 +35,24 @@ describe("Add Recipe", () => {
     await closeDb();
   });
 
-  it("should insert recipe into the database without publishing it", async () => {
-    const recipe = makeFakeRecipe({ isPublished: true });
-    const insertedRecipe = await addRecipe(recipe);
-    expect(Id.isValidId(insertedRecipe.id)).toBeTrue;
-    verifyEquality(insertedRecipe, recipe);
-    const foundRecipe = await recipesDb.findById({ id: insertedRecipe.id });
-    expect(foundRecipe.id).toBe(insertedRecipe.id);
-    verifyEquality(foundRecipe, recipe);
-    expect(foundRecipe.isPublished).toBeFalse;
+  it("should throw an error when the recipe to be edited does not exist in the database", async () => {
+    const recipe = makeFakeRecipe({ id: Id.makeId() });
+    expect(editRecipe(recipe)).rejects.toThrow("Non-existent recipes cannot be edited");
   });
 
-  it("should not insert a recipe if there is already a recipe with the same name in the database", async () => {
-    const recipe1 = makeFakeRecipe({ name: "Sheng Jian Bao", notes: "It's very simple!", author: "adfasdf@nyu.edu" });
-    const insertedRecipe1 = await addRecipe(recipe1);
-    const recipe2 = makeFakeRecipe({
-      name: "Sheng Jian Bao",
-      notes: "Yes, you need some new notes.",
-      author: "zccafads3@nyu.edu"
+  it("should edit an existing recipe without publishing it", async () => {
+    const recipe = makeFakeRecipe({ notes: "This is a great recipe." });
+    const insertedRecipe = await addRecipe(recipe);
+    const newRecipe = makeFakeRecipe({
+      id: insertedRecipe.id,
+      notes: "This is a even greater recipe.",
+      published: true
     });
-    const insertedRecipe2 = await addRecipe(recipe2);
-    expect(insertedRecipe1.id).toBe(insertedRecipe2.id);
-    verifyEquality(insertedRecipe1, insertedRecipe2);
+    const { id } = await editRecipe(newRecipe);
+    expect(id).toBe(insertedRecipe.id);
+    const editedRecipe = await recipesDb.findById({ id });
+    expect(editedRecipe.id).toBe(insertedRecipe.id);
+    verifyEquality(editedRecipe, newRecipe);
+    expect(editedRecipe.published).toBeFalse;
   });
 });

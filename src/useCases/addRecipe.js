@@ -2,11 +2,9 @@ const makeRecipe = require("../entities");
 
 function buildAddRecipe({ recipesDb }) {
   return async function addRecipe(recipeInfo) {
-    const recipe = makeRecipe(recipeInfo);
+    const recipe = makeRecipe({ ...recipeInfo, isPublished: false });
     const existingRecipe = await recipesDb.findByName({ name: recipe.getName() });
-    if (existingRecipe) {
-      return existingRecipe;
-    }
+    if (existingRecipe) return existingRecipe;
 
     const ingredients = recipe.getIngredients().map((ingredient) => ({
       name: ingredient.getName(),

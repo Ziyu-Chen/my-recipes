@@ -2,7 +2,7 @@ const { MongoClient } = require("mongodb");
 
 let connection, db;
 
-global.__MONGO_URI__ = "mongodb://Ziyu-Chen:password!@localhost:27017";
+global.__MONGO_URI__ = "mongodb://Ziyu-Chen:password@localhost:27017";
 global.__MONGO_DB_NAME__ = "my-recipes";
 
 async function makeDb() {

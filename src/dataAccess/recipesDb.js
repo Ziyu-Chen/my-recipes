@@ -4,8 +4,10 @@ function makeRecipesDb({ makeDb }) {
   return Object.freeze({
     findById,
     findByName,
-    insert
+    insert,
+    update
   });
+
   async function findById({ id: _id }) {
     const db = await makeDb();
     const result = await db.collection("recipes").find({ _id });
@@ -27,6 +29,18 @@ function makeRecipesDb({ makeDb }) {
     const { acknowledged, insertedId: id } = await db.collection("recipes").insertOne({ _id, ...info });
     if (!acknowledged) throw new Error("Not inserted");
     return { id, ...info };
+  }
+  async function update({ id: _id, ...info }) {
+    const db = await makeDb();
+    const { matchedCount, modifiedCount } = await db.collection("recipes").updateOne(
+      { _id },
+      {
+        $set: { ...info }
+      }
+    );
+    if (matchedCount == 0) throw new Error("Non-existent recipes cannot be edited");
+    if (modifiedCount == 0) throw new Error("Not modified");
+    return { id: _id };
   }
 }
 
