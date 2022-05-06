@@ -22,14 +22,9 @@ describe("Add Recipe", () => {
   let recipesDb;
   let addRecipe;
 
-  beforeAll(() => {
-    recipesDb = makeRecipesDb({ makeDb });
+  beforeAll(async () => {
+    recipesDb = await makeRecipesDb({ makeDb });
     addRecipe = buildAddRecipe({ recipesDb });
-  });
-
-  afterAll(async () => {
-    await clearDb();
-    await closeDb();
   });
 
   it("should insert recipe into the database without publishing it", async () => {

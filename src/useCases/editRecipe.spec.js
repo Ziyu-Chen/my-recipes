@@ -24,15 +24,10 @@ describe("Edit Recipe", () => {
   let addRecipe;
   let editRecipe;
 
-  beforeAll(() => {
-    recipesDb = makeRecipesDb({ makeDb });
+  beforeAll(async () => {
+    recipesDb = await makeRecipesDb({ makeDb });
     addRecipe = buildAddRecipe({ recipesDb });
     editRecipe = buildEditRecipe({ recipesDb });
-  });
-
-  afterAll(async () => {
-    await clearDb();
-    await closeDb();
   });
 
   it("should throw an error when the recipe to be edited does not exist in the database", async () => {

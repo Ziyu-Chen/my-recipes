@@ -9,7 +9,7 @@ function buildEditRecipe({ recipesDb }) {
       unit: ingredient.getUnit(),
       quantity: ingredient.getQuantity()
     }));
-    const updatedRecipe = await recipesDb.update({
+    const { id } = await recipesDb.update({
       id: recipe.getId(),
       notes: recipe.getNotes(),
       difficulty: recipe.getDifficulty(),
@@ -18,7 +18,7 @@ function buildEditRecipe({ recipesDb }) {
       published: recipe.isPublished(),
       modifiedOn: recipe.getModifiedOn()
     });
-    return updatedRecipe;
+    return { id };
   };
 }
 
